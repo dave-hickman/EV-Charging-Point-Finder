@@ -4,12 +4,8 @@ import SearchBar from "./SearchBar";
 import Script from "next/script";
 import Map from "./Map";
 
+
 const apikey = process.env.API_KEY || "";
-const location = {
-  address: "St Pauls Cathedral",
-  lat: 51.513870,
-  lng: -0.098362,
-};
 const zoomLevel = 18;
 
 export default function Home() {
@@ -21,7 +17,7 @@ export default function Home() {
           <SearchBar />
           <p>This is my project</p>
         </div>
-        <Map apikey={apikey} location={location} zoomLevel={zoomLevel} />
+        <Map apikey={apikey} zoomLevel={zoomLevel} />
       </main>
     </>
   );
