@@ -25,3 +25,16 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.map-container {
+  height: 80%;
+  width: 80%;
+  top: 30%;
+  left: 10%;
+  position: absolute;
+}
+
+.google-map,.map{
+  height: 70%;
+  width: 70%;
+}
