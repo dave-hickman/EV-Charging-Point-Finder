@@ -26,11 +26,33 @@ const libraries: (
   | "visualization"
 )[] = ["places"];
 
+const EVKey = process.env.EV_API_KEY
+
 export default function Map({zoomLevel, apikey }: Props) {
   const [location, setLocation] = useState({
     lat: 51.51387,
     lng: -0.098362,
   });
+  const [markers, setMarkers] = useState([])
+  const [markersLoaded, setMarkersLoaded] = useState(true) 
+
+  async function getPoints() {
+    const res = await fetch(`https://api.openchargemap.io/v3/poi?output=json&latitude=${location.lat}&longitude=${location.lng}&maxresults=20&key=${EVKey}`)
+    const data = res.json()
+    return data
+  }
+  
+  useEffect(() => {
+    setMarkersLoaded(false)
+    const fetchPoints = async () => {
+      const response = await getPoints()
+      setMarkers(response)
+      setMarkersLoaded(true)
+    }
+    fetchPoints()
+  }, [location])
+
+
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: apikey,
     libraries,
@@ -61,7 +83,7 @@ export default function Map({zoomLevel, apikey }: Props) {
   return (
     <section className="h-full w-full absolute">
       <div className="h-full w-full">
-        {!isLoaded ? (
+        {!isLoaded || !markersLoaded ? (
           <p>Loading...</p>
         ) : (
           <GoogleMap
@@ -76,25 +98,15 @@ export default function Map({zoomLevel, apikey }: Props) {
               <input
                 type="text"
                 placeholder="Find a charger"
-                style={{
-                  marginTop: "10rem",
-                  boxSizing: `border-box`,
-                  border: `1px solid transparent`,
-                  width: `240px`,
-                  height: `32px`,
-                  padding: `0 12px`,
-                  borderRadius: `40px`,
-                  boxShadow: `0 2px 6px rgba(0, 0, 0, 0.3)`,
-                  fontSize: `14px`,
-                  outline: `none`,
-                  textOverflow: `ellipses`,
-                  position: "absolute",
-                  left: "50%",
-                  marginLeft: "-120px",
-                }}
+                className="mt-40 box-border absolute w-60 h-8 px-4 rounded-2xl shadow-md text-base outline-none text-ellipsis left-2/4 -ml-32"
               />
             </StandaloneSearchBox>
             <Marker position={location}/>
+            {markers.map((marker, index) => {
+              return(
+                <Marker key={index} position={{lat: marker.AddressInfo.Latitude, lng: marker.AddressInfo.Longitude}}/>
+              )
+            })}
           </GoogleMap>
         )}
       </div>
