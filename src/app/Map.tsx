@@ -42,6 +42,12 @@ export default function Map({ zoomLevel, apikey }: Props) {
     return data;
   }
 
+  if("geolocation" in navigator){
+    navigator.geolocation.getCurrentPosition((position) => {
+      setLocation({lat: position.coords.latitude, lng: position.coords.longitude})
+    })
+  }
+
   useEffect(() => {
     setMarkersLoaded(false);
     const fetchPoints = async () => {
