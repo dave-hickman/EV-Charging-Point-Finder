@@ -42,7 +42,7 @@ export default function Map({ zoomLevel, apikey }: Props) {
     return data;
   }
 
-  if("geolocation" in navigator){
+  if(typeof window !== 'undefined' && "geolocation" in navigator){
     navigator.geolocation.getCurrentPosition((position) => {
       setLocation({lat: position.coords.latitude, lng: position.coords.longitude})
     })
