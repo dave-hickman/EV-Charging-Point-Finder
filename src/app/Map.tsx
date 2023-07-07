@@ -110,11 +110,15 @@ export default function Map({ zoomLevel, apikey }: Props) {
               <input
                 type="text"
                 placeholder="Find a charger"
-                className="mt-40 box-border absolute w-60 h-8 px-4 rounded-2xl shadow-md text-base outline-none text-ellipsis left-2/4 -ml-32"
+                className="mt-40 box-border absolute w-80 h-16 px-4 rounded-2xl shadow-md text-base outline-none text-ellipsis left-2/4 -ml-32"
               />
             </StandaloneSearchBox>
             <Marker position={location} />
             {markers.map((marker, index) => {
+              const markerIcon = {
+                url: 'https://img.icons8.com/3d-fluency/94/lightning-bolt.png',
+                scaledSize: new google.maps.Size(40,40)
+              }
               return (
                 <Marker
                   key={index}
@@ -123,6 +127,7 @@ export default function Map({ zoomLevel, apikey }: Props) {
                     lng: marker.AddressInfo.Longitude,
                   }}
                   onClick={() => handleMarkerClick(marker)}
+                  icon={markerIcon}
                 />
               );
             })}
