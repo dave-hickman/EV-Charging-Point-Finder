@@ -36,18 +36,22 @@ export default function Map({ zoomLevel, apikey }: Props) {
 
   async function getPoints() {
     const res = await fetch(
-      `https://api.openchargemap.io/v3/poi?output=json&latitude=${location.lat}&longitude=${location.lng}&maxresults=20&key=${EVKey}`
+      `https://api.openchargemap.io/v3/poi?output=json&countrycode=GB&latitude=${location.lat}&longitude=${location.lng}&maxresults=10&key=${EVKey}`
     );
     const data = res.json();
     return data;
   }
 
-  useEffect(()=>{if("geolocation" in navigator){
-    navigator.geolocation.getCurrentPosition((position) => {
-      setLocation({lat: position.coords.latitude, lng: position.coords.longitude})
-    })
-  }}, [])
-  
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        setLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      });
+    }
+  }, []);
 
   useEffect(() => {
     setMarkersLoaded(false);
@@ -97,7 +101,14 @@ export default function Map({ zoomLevel, apikey }: Props) {
     <section className="h-full w-full absolute">
       <div className="h-full w-full">
         {!isLoaded || !markersLoaded ? (
-          <p>Loading...</p>
+          <div className="bg-gray-200 w-full min-h-screen flex justify-center items-center">
+            <div className="flex flex-col items-center justify-center">
+              <div className="animate-spin flex items-center justify-center rounded-full w-14 h-14 bg-gradient-to-tr from-indigo-500 to-pink-500">
+                <div className="h-9 w-9 rounded-full bg-gray-200"></div>
+              </div>
+              <p className="p-4">Loading Charging Points Near You...</p>
+            </div>
+          </div>
         ) : (
           <GoogleMap
             mapContainerClassName="h-full w-full"
@@ -108,18 +119,20 @@ export default function Map({ zoomLevel, apikey }: Props) {
               onLoad={onLoad}
               onPlacesChanged={onPlacesChanged}
             >
+              <div className="min-w-full flex justify-center">
               <input
                 type="text"
                 placeholder="Find a charger"
-                className="mt-40 box-border absolute w-80 h-16 px-4 rounded-2xl shadow-md text-base outline-none text-ellipsis left-2/4 -ml-32"
+                className="mt-24 ml-4 mr-4 box-border absolute w-80 h-16 px-4 rounded-2xl shadow-md text-base outline-none text-ellipsis "
               />
+              </div>
             </StandaloneSearchBox>
             <Marker position={location} />
             {markers.map((marker, index) => {
               const markerIcon = {
-                url: 'https://img.icons8.com/3d-fluency/94/lightning-bolt.png',
-                scaledSize: new google.maps.Size(40,40)
-              }
+                url: "https://img.icons8.com/3d-fluency/94/lightning-bolt.png",
+                scaledSize: new google.maps.Size(40, 40),
+              };
               return (
                 <Marker
                   key={index}
@@ -135,11 +148,22 @@ export default function Map({ zoomLevel, apikey }: Props) {
             {selectedMarker && (
               <InfoWindow
                 position={{
-                  lat: (selectedMarker.AddressInfo.Latitude)+0.0001,
+                  lat: selectedMarker.AddressInfo.Latitude + 0.0001,
                   lng: selectedMarker.AddressInfo.Longitude,
                 }}
                 onCloseClick={() => setSelectedMarker(null)}
-              ><><p>Number of Points: {selectedMarker.NumberOfPoints}</p><p>Connection Type ID: {selectedMarker.Connections[0]?.ConnectionTypeID}</p><p>Connection Type: {selectedMarker.Connections[0]?.ConnectionType?.Title}</p></>
+              >
+                <>
+                  <p>Number of Points: {selectedMarker.NumberOfPoints}</p>
+                  <p>
+                    Connection Type ID:{" "}
+                    {selectedMarker.Connections[0]?.ConnectionTypeID}
+                  </p>
+                  <p>
+                    Connection Type:{" "}
+                    {selectedMarker.Connections[0]?.ConnectionType?.Title}
+                  </p>
+                </>
               </InfoWindow>
             )}
           </GoogleMap>
