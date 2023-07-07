@@ -42,11 +42,12 @@ export default function Map({ zoomLevel, apikey }: Props) {
     return data;
   }
 
-  if(typeof window !== 'undefined' && "geolocation" in navigator){
+  useEffect(()=>{if("geolocation" in navigator){
     navigator.geolocation.getCurrentPosition((position) => {
       setLocation({lat: position.coords.latitude, lng: position.coords.longitude})
     })
-  }
+  }}, [])
+  
 
   useEffect(() => {
     setMarkersLoaded(false);
