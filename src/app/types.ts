@@ -197,4 +197,6 @@ interface CommentType {
     SubmissionStatus: SubmissionStatus;
   }
 
-  export default MarkerData
+  interface DirectionsResult extends google.maps.DirectionsResult {}
+
+  export type {MarkerData, DirectionsResult,}

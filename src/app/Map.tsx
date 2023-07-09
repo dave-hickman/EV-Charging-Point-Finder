@@ -6,8 +6,9 @@ import {
   Marker,
   StandaloneSearchBox,
   InfoWindow,
+  DirectionsRenderer,
 } from "@react-google-maps/api";
-import MarkerData from "./types";
+import {MarkerData, DirectionsResult} from "./types";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 interface Props {
@@ -33,6 +34,8 @@ export default function Map({ zoomLevel, apikey }: Props) {
   const [markers, setMarkers] = useState<MarkerData[]>([]);
   const [markersLoaded, setMarkersLoaded] = useState(true);
   const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
+  const [directionsResponse, setDirectionsResponse] =
+    useState<DirectionsResult | null>(null);
 
   async function getPoints() {
     const res = await fetch(
@@ -40,6 +43,21 @@ export default function Map({ zoomLevel, apikey }: Props) {
     );
     const data = res.json();
     return data;
+  }
+
+  async function routeCalculator(marker : MarkerData) {
+    if(window.google && isLoaded){
+    const directionsService = new google.maps.DirectionsService();
+      const result = await directionsService.route({
+        origin: { lat: location.lat, lng: location.lng },
+        destination: {
+          lat: marker?.AddressInfo.Latitude,
+          lng: marker?.AddressInfo.Longitude,
+        },
+        travelMode: google.maps.TravelMode.DRIVING,
+      });
+      setDirectionsResponse(result);
+    }
   }
 
   useEffect(() => {
@@ -54,8 +72,8 @@ export default function Map({ zoomLevel, apikey }: Props) {
   }, []);
 
   useEffect(() => {
-    setMarkersLoaded(false);
     const fetchPoints = async () => {
+      setMarkersLoaded(false);
       const response = await getPoints();
       setMarkers(response);
       setMarkersLoaded(true);
@@ -65,6 +83,8 @@ export default function Map({ zoomLevel, apikey }: Props) {
 
   const handleMarkerClick = (marker: MarkerData) => {
     setSelectedMarker(marker);
+    setDirectionsResponse(null);
+    routeCalculator(marker);
   };
 
   const { isLoaded } = useLoadScript({
@@ -87,6 +107,8 @@ export default function Map({ zoomLevel, apikey }: Props) {
             lng: selectedPlace.geometry.location.lng(),
           };
           setLocation({ lat: newCenter.lat, lng: newCenter.lng });
+          setDirectionsResponse(null);
+          setSelectedMarker(null);
         }
       }
     }
@@ -114,17 +136,23 @@ export default function Map({ zoomLevel, apikey }: Props) {
             mapContainerClassName="h-full w-full"
             center={center}
             zoom={zoomLevel}
+            options={{
+              zoomControl: false,
+              streetViewControl: false,
+              mapTypeControl: false,
+              fullscreenControl: false,
+            }}
           >
             <StandaloneSearchBox
               onLoad={onLoad}
               onPlacesChanged={onPlacesChanged}
             >
               <div className="min-w-full flex justify-center">
-              <input
-                type="text"
-                placeholder="Find a charger"
-                className="mt-24 ml-4 mr-4 box-border absolute w-80 h-16 px-4 rounded-2xl shadow-md text-base outline-none text-ellipsis "
-              />
+                <input
+                  type="text"
+                  placeholder="Find a charger"
+                  className="mt-24 ml-4 mr-4 box-border absolute w-80 h-16 px-4 rounded-2xl shadow-md text-base outline-none text-ellipsis "
+                />
               </div>
             </StandaloneSearchBox>
             <Marker position={location} />
@@ -165,6 +193,9 @@ export default function Map({ zoomLevel, apikey }: Props) {
                   </p>
                 </>
               </InfoWindow>
+            )}
+            {directionsResponse && (
+              <DirectionsRenderer directions={directionsResponse} />
             )}
           </GoogleMap>
         )}
