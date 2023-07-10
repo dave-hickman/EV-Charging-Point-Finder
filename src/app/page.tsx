@@ -6,7 +6,7 @@ import Map from "./Map";
 
 
 const apikey = process.env.API_KEY || "";
-const zoomLevel = 18;
+const zoomLevel = 17;
 
 export default function Home() {
   return (
