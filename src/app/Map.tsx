@@ -182,11 +182,7 @@ export default function Map({ zoomLevel, apikey }: Props) {
                 onCloseClick={() => setSelectedMarker(null)}
               >
                 <>
-                  <p>Number of Points: {selectedMarker.NumberOfPoints}</p>
-                  <p>
-                    Connection Type ID:{" "}
-                    {selectedMarker.Connections[0]?.ConnectionTypeID}
-                  </p>
+                  {selectedMarker.NumberOfPoints && (<p>Number of Points: {selectedMarker.NumberOfPoints}</p>)}
                   <p>
                     Connection Type:{" "}
                     {selectedMarker.Connections[0]?.ConnectionType?.Title}
