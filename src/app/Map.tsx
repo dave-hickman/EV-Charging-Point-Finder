@@ -134,7 +134,7 @@ export default function Map({ zoomLevel, apikey }: Props) {
               <div className="animate-spin flex items-center justify-center rounded-full w-20 h-20 bg-gradient-to-tr from-indigo-500 to-pink-500">
                 <div className="h-14 w-14 rounded-full bg-slate-800"></div>
               </div>
-              <p className="p-4 text-slate-100 text-4xl text-center font-FranklinGothic font-light">
+              <p className="p-4 mt-2 text-slate-100 text-4xl text-center font-FranklinGothic font-light">
                 Loading Charging Points Near You...
               </p>
               <p className="p-2 text-slate-100 text-2xl text-center font-FranklinGothic font-light">
