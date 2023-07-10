@@ -8,7 +8,7 @@ import {
   InfoWindow,
   DirectionsRenderer,
 } from "@react-google-maps/api";
-import {MarkerData, DirectionsResult} from "./types";
+import { MarkerData, DirectionsResult } from "./types";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 interface Props {
@@ -36,18 +36,19 @@ export default function Map({ zoomLevel, apikey }: Props) {
   const [selectedMarker, setSelectedMarker] = useState<MarkerData | null>(null);
   const [directionsResponse, setDirectionsResponse] =
     useState<DirectionsResult | null>(null);
+  const [inputValue, setInputValue] = useState("");
 
   async function getPoints() {
     const res = await fetch(
-      `https://api.openchargemap.io/v3/poi?output=json&countrycode=GB&latitude=${location.lat}&longitude=${location.lng}&maxresults=10&key=${EVKey}`
+      `https://api.openchargemap.io/v3/poi?output=json&countrycode=GB&latitude=${location.lat}&longitude=${location.lng}&maxresults=20&key=${EVKey}`
     );
     const data = res.json();
     return data;
   }
 
-  async function routeCalculator(marker : MarkerData) {
-    if(window.google && isLoaded){
-    const directionsService = new google.maps.DirectionsService();
+  async function routeCalculator(marker: MarkerData) {
+    if (window.google && isLoaded) {
+      const directionsService = new google.maps.DirectionsService();
       const result = await directionsService.route({
         origin: { lat: location.lat, lng: location.lng },
         destination: {
@@ -95,7 +96,12 @@ export default function Map({ zoomLevel, apikey }: Props) {
 
   const onLoad = (ref: google.maps.places.SearchBox) => {
     searchBoxRef.current = ref;
+    const places = ref.getPlaces()
+    if (places && places.length > 0){
+    setInputValue(places[0].formatted_address || "");
+    }
   };
+
   const onPlacesChanged = () => {
     if (searchBoxRef.current) {
       const places = searchBoxRef.current.getPlaces();
@@ -123,12 +129,18 @@ export default function Map({ zoomLevel, apikey }: Props) {
     <section className="h-full w-full absolute">
       <div className="h-full w-full">
         {!isLoaded || !markersLoaded ? (
-          <div className="bg-gray-200 w-full min-h-screen flex justify-center items-center">
+          <div className="bg-slate-800 w-full min-h-screen flex justify-center items-center">
             <div className="flex flex-col items-center justify-center">
-              <div className="animate-spin flex items-center justify-center rounded-full w-14 h-14 bg-gradient-to-tr from-indigo-500 to-pink-500">
-                <div className="h-9 w-9 rounded-full bg-gray-200"></div>
+              <div className="animate-spin flex items-center justify-center rounded-full w-20 h-20 bg-gradient-to-tr from-indigo-500 to-pink-500">
+                <div className="h-14 w-14 rounded-full bg-slate-800"></div>
               </div>
-              <p className="p-4">Loading Charging Points Near You...</p>
+              <p className="p-4 text-slate-100 text-4xl text-center font-FranklinGothic font-light">
+                Loading Charging Points Near You...
+              </p>
+              <p className="p-2 text-slate-100 text-2xl text-center font-FranklinGothic font-light">
+                Click on a charging point to see the charging point type and the
+                quickest route from your chosen location
+              </p>
             </div>
           </div>
         ) : (
@@ -151,7 +163,10 @@ export default function Map({ zoomLevel, apikey }: Props) {
                 <input
                   type="text"
                   placeholder="Find a charger"
-                  className="mt-24 ml-4 mr-4 box-border absolute w-80 h-16 px-4 rounded-2xl shadow-md text-base outline-none text-ellipsis "
+                  className="mt-24 ml-4 mr-4 box-border absolute w-80 h-16 px-4 rounded-full shadow-md font-FranklinGothic text-base border-2 border-slate-800 outline-none text-ellipsis "
+                  onClick={() => setInputValue("")}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
                 />
               </div>
             </StandaloneSearchBox>
@@ -182,7 +197,9 @@ export default function Map({ zoomLevel, apikey }: Props) {
                 onCloseClick={() => setSelectedMarker(null)}
               >
                 <>
-                  {selectedMarker.NumberOfPoints && (<p>Number of Points: {selectedMarker.NumberOfPoints}</p>)}
+                  {selectedMarker.NumberOfPoints && (
+                    <p>Number of Points: {selectedMarker.NumberOfPoints}</p>
+                  )}
                   <p>
                     Connection Type:{" "}
                     {selectedMarker.Connections[0]?.ConnectionType?.Title}
