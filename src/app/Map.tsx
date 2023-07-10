@@ -134,10 +134,10 @@ export default function Map({ zoomLevel, apikey }: Props) {
               <div className="animate-spin flex items-center justify-center rounded-full w-20 h-20 bg-gradient-to-tr from-indigo-500 to-pink-500">
                 <div className="h-14 w-14 rounded-full bg-slate-800"></div>
               </div>
-              <p className="p-4 mt-2 text-slate-100 text-4xl text-center font-FranklinGothic font-light">
+              <p className="p-4 mt-2 text-slate-100 text-3xl text-center font-FranklinGothic font-light">
                 Loading Charging Points Near You...
               </p>
-              <p className="p-2 text-slate-100 text-2xl text-center font-FranklinGothic font-light">
+              <p className="p-2 text-slate-100 text-base text-center font-FranklinGothic font-light">
                 Click on a charging point to see the charging point type and the
                 quickest route from your chosen location
               </p>
@@ -163,7 +163,7 @@ export default function Map({ zoomLevel, apikey }: Props) {
                 <input
                   type="text"
                   placeholder="Find a charger"
-                  className="mt-24 ml-4 mr-4 box-border absolute w-80 h-16 px-4 rounded-full shadow-md font-FranklinGothic text-base border-2 border-slate-800 outline-none text-ellipsis "
+                  className="mt-24 ml-4 mr-4 box-border absolute w-60 h-10 sm:w-80 sm:h-16 px-4 rounded-full shadow-md font-FranklinGothic text-base border-2 border-slate-800 outline-none text-ellipsis "
                   onClick={() => setInputValue("")}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
