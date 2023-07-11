@@ -1,6 +1,3 @@
-import Image from "next/image";
-import SearchBar from "./SearchBar";
-
 import Script from "next/script";
 import Map from "./Map";
 
